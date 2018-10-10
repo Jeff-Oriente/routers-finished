@@ -34,6 +34,20 @@ router.get('notes/:id', (req, res, next) => {
   });
 });
 
+//Delete an item
+router.delete('/notes/:id', (req, res, next) => {
+    const id = req.params.id;
+    notes.delete(id, err => {
+        if(err){
+            return res.status(500) && next(err);
+        }
+        if(!err){
+            return res.status(204);
+        }
+        
+    });
+});
+
 // Post (insert) an item
 router.post('/notes', (req, res, next) => {
     const { title, content } = req.body;
@@ -59,7 +73,7 @@ router.post('/notes', (req, res, next) => {
   });
 
 // Put update an item
-router.put('/api/notes/:id', (req, res, next) => {
+router.put('/notes/:id', (req, res, next) => {
   const id = req.params.id;
 
   /***** Never trust users - validate input *****/
