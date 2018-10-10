@@ -1,17 +1,17 @@
 'use strict';
 
+
 const express = require('express');
 
-// Simple In-Memory Database
-const data = require('./db/notes');
-const simDB = require('./db/simDB');
-const notes = simDB.initialize(data);
+
 
 const logger = require('./middleware/logger');
 const { PORT } = require('./config');
 
 // Create an Express application
 const app = express();
+
+const notesrouter = require('./router/notes.router');
 
 // Log all requests
 app.use(logger);
@@ -22,66 +22,10 @@ app.use(express.static('public'));
 // Parse request body
 app.use(express.json());
 
-// Get All (and search by query)
-app.get('/api/notes', (req, res, next) => {
-  const { searchTerm } = req.query;
 
-  notes.filter(searchTerm, (err, list) => {
-    if (err) {
-      return next(err);
-    }
-    res.json(list);
-  });
-});
-
-// Get a single item
-app.get('/api/notes/:id', (req, res, next) => {
-  const id = req.params.id;
-
-  notes.find(id, (err, item) => {
-    if (err) {
-      return next(err);
-    }
-    if (item) {
-      res.json(item);
-    } else {
-      next();
-    }
-  });
-});
-
-// Put update an item
-app.put('/api/notes/:id', (req, res, next) => {
-  const id = req.params.id;
-
+app.use('/api', notesrouter);
   /***** Never trust users - validate input *****/
-  const updateObj = {};
-  const updateableFields = ['title', 'content'];
-
-  updateableFields.forEach(field => {
-    if (field in req.body) {
-      updateObj[field] = req.body[field];
-    }
-  });
-
-  /***** Never trust users - validate input *****/
-  if (!updateObj.title) {
-    const err = new Error('Missing `title` in request body');
-    err.status = 400;
-    return next(err);
-  }
-
-  notes.update(id, updateObj, (err, item) => {
-    if (err) {
-      return next(err);
-    }
-    if (item) {
-      res.json(item);
-    } else {
-      next();
-    }
-  });
-});
+  
 
 // DEMO ONLY: brute-force way to test our error handler
 app.get('/throw', (req, res, next) => {
