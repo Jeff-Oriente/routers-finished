@@ -92,9 +92,11 @@ const noteful = (function () {
       } else {
 
         api.create(noteObj, createResponse => {
+          console.log(createResponse);
           store.currentNote = createResponse;
 
           api.search(store.currentSearchTerm, searchResponse => {
+            console.log(searchResponse);
             store.notes = searchResponse;
             render();
           });
