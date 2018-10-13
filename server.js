@@ -50,8 +50,13 @@ app.use(function (err, req, res, next) {
 });
 
 // Listen for incoming connections
-app.listen(PORT, function () {
-  console.info(`Server listening on ${this.address().port}`);
-}).on('error', err => {
-  console.error(err);
-});
+// Listen for incoming connections
+if (require.main === module) {    //did we run type in the Terminal node server command?  If we did....do stuff in this block of code.  
+  app.listen(PORT, function () {  //so if we actually did run a server, we want to listen in on this port and do following stuff.   In the terminal, require.main equals whatever the module is.
+    console.info(`Server listening on ${this.address().port}`);
+  }).on('error', err => {
+    console.error(err);
+  });
+}
+
+module.exports = app; // Export for testing
